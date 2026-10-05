@@ -86,7 +86,7 @@ fun MainContent(
                             }
 
                             SetupDestination.ServerList -> {
-                                SwitchServerContent(Modifier.fillMaxSize())
+                                HomeTvScreen(Modifier.fillMaxSize())
                             }
 
                             is SetupDestination.UserList -> {
