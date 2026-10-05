@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name" translatable="false">Wholphin</string>
-    <string name="app_name_long" translatable="false">Wholphin</string>
+    <string name="app_name" translatable="false">HomeTV</string>
+    <string name="app_name_long" translatable="false">HomeTV</string>
 
     <string name="about">About</string>
     <string name="active_recordings">Active Recordings</string>
@@ -952,3 +952,4 @@
         <item quantity="other">%1$d Episodes</item>
     </plurals>
 </resources>
+
