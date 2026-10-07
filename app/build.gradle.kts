@@ -35,7 +35,17 @@ val mpvModuleExists =
     providers.provider { project.file("libs/wholphin-mpv-release.aar").exists() }
 val extensionsRepoActive =
     providers.provider { project.hasProperty("WholphinExtensionsUsername") }
-
+val homeTvApiToken =
+    providers.provider {
+        val localPropertiesFile = project.rootProject.file("local.properties")
+        if (!localPropertiesFile.exists()) {
+            ""
+        } else {
+            val properties = Properties()
+            properties.load(localPropertiesFile.inputStream())
+            properties.getProperty("HOMETV_API_TOKEN", "")
+        }
+    }
 // See https://issuetracker.google.com/issues/402800800
 val isBuildingBundle =
     providers.provider {
@@ -80,6 +90,11 @@ configure<ApplicationExtension> {
         testInstrumentationRunner = "com.github.damontecres.wholphin.test.WholphinTestRunner"
 
         buildConfigField("long", "BUILD_TIME", System.currentTimeMillis().toString())
+        buildConfigField(
+            "String",
+            "HOMETV_API_TOKEN",
+            "\"${homeTvApiToken.get()}\"",
+        )
     }
 
     signingConfigs {

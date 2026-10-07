@@ -58,4 +58,31 @@ class HomeTvViewModel @Inject constructor(
             }
         }
     }
+
+    fun playPrimaPlusTest(
+        onPlayback: (HomeTvPlayback) -> Unit,
+    ) {
+        viewModelScope.launch {
+            try {
+                val response = withContext(ioDispatcher) {
+                    homeTvApi.getProviderPlayback(
+                        provider = "primaplus",
+                        providerItemId = "e89a2b1b-348e-407b-bd17-939a5c34e17c",
+                    )
+                }
+
+                onPlayback(
+                    HomeTvPlayback(
+                        title = "Cesta do L.A.",
+                        url = response.manifestUrl,
+                        headers = response.manifestHeaders,
+                    ),
+                )
+            } catch (exception: Exception) {
+                uiState = uiState.copy(
+                    error = exception.message ?: "Prima+ playback selhal",
+                )
+            }
+        }
+    }
 }

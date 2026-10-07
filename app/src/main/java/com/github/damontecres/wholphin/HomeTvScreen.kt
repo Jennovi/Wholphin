@@ -13,6 +13,10 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -32,6 +36,51 @@ fun HomeTvScreen(
     viewModel: HomeTvViewModel = hiltViewModel(),
 ) {
     val state = viewModel.uiState
+
+    var showProgram by remember {
+        mutableStateOf(false)
+    }
+
+    var playback by remember {
+        mutableStateOf<HomeTvPlayback?>(null)
+    }
+
+    androidx.activity.compose.BackHandler(
+        enabled = playback != null || showProgram,
+    ) {
+        when {
+            playback != null -> {
+                playback = null
+            }
+
+            showProgram -> {
+                showProgram = false
+            }
+        }
+    }
+
+    playback?.let { item ->
+        HomeTvPlayerScreen(
+            playback = item,
+            onBack = {
+                playback = null
+            },
+        )
+        return
+    }
+
+    if (showProgram) {
+        HomeTvProgramScreen(
+            onBack = {
+                showProgram = false
+            },
+            onPlay = { item ->
+                playback = item
+            },
+        )
+        return
+    }
+
 
     Column(
         modifier = modifier
@@ -54,7 +103,23 @@ fun HomeTvScreen(
             ) {
                 Button(onClick = {}) { Text("Domů") }
                 Button(onClick = {}) { Text("Živá TV") }
-                Button(onClick = {}) { Text("Filmy") }
+                Button(
+                    onClick = {
+                        showProgram = true
+                    },
+                ) {
+                    Text("Program")
+                }
+
+                Button(
+                    onClick = {
+                        viewModel.playPrimaPlusTest { item ->
+                            playback = item
+                        }
+                    },
+                ) {
+                    Text("Prima+ test")
+                }
                 Button(onClick = {}) { Text("Seriály") }
                 Button(onClick = {}) { Text("Žebříčky") }
                 Button(onClick = {}) { Text("Hledat") }
@@ -102,7 +167,12 @@ fun HomeTvScreen(
                         items = state.channels,
                         key = { it.number },
                     ) { channel ->
-                        LiveTvCard(channel)
+                        LiveTvCard(
+                            channel = channel,
+                            onPlay = { item ->
+                                playback = item
+                            },
+                        )
                     }
                 }
             }
@@ -141,12 +211,18 @@ fun HomeTvScreen(
 @Composable
 private fun LiveTvCard(
     channel: LiveChannel,
+    onPlay: (HomeTvPlayback) -> Unit,
 ) {
     val programme = channel.current ?: return
 
     Card(
         onClick = {
-            // Živé přehrávání připojíme jako další krok.
+            onPlay(
+                HomeTvPlayback(
+                    title = programme.title,
+                    url = channel.playUrl,
+                ),
+            )
         },
         modifier = Modifier.width(210.dp),
         scale = CardDefaults.scale(
@@ -205,3 +281,10 @@ private fun LiveTvCard(
         }
     }
 }
+
+
+
+
+
+
+
