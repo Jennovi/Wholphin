@@ -68,3 +68,7 @@ scripts/mpv/prefix/
 # HomeTV local backups
 *.bak
 gradle/gradle-daemon-jvm.properties
+
+# Local HomeTV backup files
+*.before-*
+*.bad-*
